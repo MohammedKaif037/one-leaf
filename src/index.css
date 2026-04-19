@@ -1,0 +1,140 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Quicksand:wght@300;400;500&display=swap');
+
+:root {
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --sans: 'Quicksand', system-ui, sans-serif;
+
+  /* Morning defaults — JS overrides at runtime */
+  --bg-from: #f5ede4;
+  --bg-to: #e8efd8;
+  --surface: rgba(255, 255, 255, 0.55);
+  --surface-border: rgba(255, 255, 255, 0.7);
+  --text-primary: #2a2018;
+  --text-secondary: #6b5c4a;
+  --text-muted: #a09080;
+  --accent: #8b3a2f;
+  --accent-light: rgba(139, 58, 47, 0.12);
+  --accent-glow: rgba(139, 58, 47, 0.3);
+  --ink: #1a1410;
+  --glass-bg: rgba(255,255,255,0.45);
+  --glass-border: rgba(255,255,255,0.65);
+  --shadow: 0 8px 40px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+  --shadow-lift: 0 20px 60px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.06);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--sans);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: var(--bg-from);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Gradient canvas */
+.gradient-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: radial-gradient(ellipse at 20% 20%, var(--bg-from) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 80%, var(--bg-to) 0%, transparent 60%),
+              linear-gradient(135deg, var(--bg-from) 0%, var(--bg-to) 100%);
+  transition: background 3s ease;
+}
+
+.gradient-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* Glass cards */
+.glass {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  box-shadow: var(--shadow);
+  border-radius: 20px;
+}
+
+/* Typography */
+h1, h2, h3 { font-family: var(--serif); font-weight: 300; letter-spacing: 0.01em; }
+p, span, div { font-family: var(--sans); }
+
+.serif { font-family: var(--serif); }
+.sans { font-family: var(--sans); }
+
+/* Ink border style */
+.ink-border {
+  border: 1.5px solid var(--text-secondary);
+  border-radius: 50%;
+  position: relative;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 2px; }
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33% { transform: translateY(-8px) rotate(1deg); }
+  66% { transform: translateY(-4px) rotate(-1deg); }
+}
+
+@keyframes seedFall {
+  0% { transform: translateY(-20px) scale(0.5); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translateY(80px) scale(1); opacity: 0; }
+}
+
+@keyframes inkDrop {
+  0% { transform: translateY(-10vh) scale(0); opacity: 0; }
+  30% { opacity: 0.6; transform: scale(1); }
+  100% { transform: translateY(110vh) scale(0.3); opacity: 0; }
+}
+
+@keyframes breathe {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.03); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes polaroidIn {
+  0% { opacity: 0; transform: translateY(30px) rotate(-2deg) scale(0.95); }
+  100% { opacity: 1; transform: translateY(0) rotate(-1deg) scale(1); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px var(--accent-glow); }
+  50% { box-shadow: 0 0 40px var(--accent-glow), 0 0 80px var(--accent-glow); }
+}
+
+.floating { animation: float 6s ease-in-out infinite; }
+.breathing { animation: breathe 4s ease-in-out infinite; }
+.fade-in { animation: fadeIn 0.6s ease forwards; }
