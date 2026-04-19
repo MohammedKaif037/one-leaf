@@ -25,7 +25,6 @@ export default function AuthWall() {
       if (mode === 'signin') {
         const { error } = await signIn(email, password)
         if (error) throw error
-        // auth context will re-render the app
       } else {
         const { error } = await signUp(email, password, { data: { display_name: name } })
         if (error) throw error
@@ -63,7 +62,6 @@ export default function AuthWall() {
 
   return (
     <div style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden' }}>
-      {/* Animated background */}
       <div className="gradient-bg" />
 
       {/* Floating ambient blobs */}
@@ -93,13 +91,10 @@ export default function AuthWall() {
       <div style={{
         position: 'relative', zIndex: 1,
         minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
+        display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center',
         padding: '2rem 1.25rem',
       }}>
-
         {/* Logo + tagline */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -117,18 +112,15 @@ export default function AuthWall() {
           <h1 style={{
             fontFamily: 'var(--serif)',
             fontSize: 'clamp(2.2rem, 6vw, 3.2rem)',
-            fontWeight: 300,
-            letterSpacing: '0.08em',
-            color: 'var(--text-primary)',
-            marginBottom: '0.6rem',
+            fontWeight: 300, letterSpacing: '0.08em',
+            color: 'var(--text-primary)', marginBottom: '0.6rem',
           }}>
             One Leaf.
           </h1>
           <p style={{
             fontFamily: 'var(--sans)',
             fontSize: 'clamp(0.82rem, 2vw, 0.92rem)',
-            color: 'var(--text-muted)',
-            letterSpacing: '0.1em',
+            color: 'var(--text-muted)', letterSpacing: '0.1em',
             textTransform: 'uppercase',
           }}>
             A daily ritual for curious minds
@@ -141,33 +133,22 @@ export default function AuthWall() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.2 }}
           className="glass"
-          style={{
-            width: 'min(420px, 100%)',
-            padding: 'clamp(1.75rem, 5vw, 2.5rem)',
-          }}
+          style={{ width: 'min(420px, 100%)', padding: 'clamp(1.75rem, 5vw, 2.5rem)' }}
         >
           {/* Mode tabs */}
           <div style={{
-            display: 'flex',
-            background: 'var(--surface)',
-            borderRadius: 50,
-            padding: '4px',
-            marginBottom: '2rem',
-            border: '1px solid var(--glass-border)',
+            display: 'flex', background: 'var(--surface)',
+            borderRadius: 50, padding: '4px',
+            marginBottom: '2rem', border: '1px solid var(--glass-border)',
           }}>
             {['signin', 'signup'].map(m => (
               <button
                 key={m}
                 onClick={() => { setMode(m); setError(''); setMessage('') }}
                 style={{
-                  flex: 1,
-                  padding: '0.55rem',
-                  borderRadius: 50,
-                  border: 'none',
-                  fontFamily: 'var(--sans)',
-                  fontSize: '0.82rem',
-                  letterSpacing: '0.06em',
-                  cursor: 'pointer',
+                  flex: 1, padding: '0.55rem', borderRadius: 50,
+                  border: 'none', fontFamily: 'var(--sans)',
+                  fontSize: '0.82rem', letterSpacing: '0.06em', cursor: 'pointer',
                   transition: 'all 0.25s',
                   background: mode === m ? 'var(--accent)' : 'transparent',
                   color: mode === m ? '#fff' : 'var(--text-muted)',
@@ -192,22 +173,17 @@ export default function AuthWall() {
               <h2 style={{
                 fontFamily: 'var(--serif)',
                 fontSize: 'clamp(1.3rem, 3.5vw, 1.65rem)',
-                fontWeight: 300,
-                color: 'var(--text-primary)',
-                marginBottom: '0.35rem',
+                fontWeight: 300, color: 'var(--text-primary)', marginBottom: '0.35rem',
               }}>
                 {mode === 'signin' ? 'Welcome back.' : 'Begin your practice.'}
               </h2>
               <p style={{
-                fontFamily: 'var(--sans)',
-                fontSize: '0.8rem',
-                color: 'var(--text-muted)',
-                letterSpacing: '0.04em',
-                lineHeight: 1.6,
+                fontFamily: 'var(--sans)', fontSize: '0.8rem',
+                color: 'var(--text-muted)', letterSpacing: '0.04em', lineHeight: 1.6,
               }}>
                 {mode === 'signin'
                   ? 'Your jar and all its gatherings are waiting.'
-                  : 'One small thing every day. That\'s all it takes.'}
+                  : "One small thing every day. That's all it takes."}
               </p>
             </motion.div>
           </AnimatePresence>
@@ -221,13 +197,9 @@ export default function AuthWall() {
                 style={{
                   background: 'rgba(90,122,58,0.12)',
                   border: '1px solid rgba(90,122,58,0.35)',
-                  borderRadius: 10,
-                  padding: '1rem 1.1rem',
-                  marginBottom: '1.25rem',
-                  color: '#4a6a2a',
-                  fontFamily: 'var(--sans)',
-                  fontSize: '0.86rem',
-                  lineHeight: 1.6,
+                  borderRadius: 10, padding: '1rem 1.1rem',
+                  marginBottom: '1.25rem', color: '#4a6a2a',
+                  fontFamily: 'var(--sans)', fontSize: '0.86rem', lineHeight: 1.6,
                 }}
               >
                 ✓ {message}
@@ -283,19 +255,13 @@ export default function AuthWall() {
                 onBlur={blurInput}
               />
 
-              {/* Error */}
               <AnimatePresence>
                 {error && (
                   <motion.p
                     initial={{ opacity: 0, y: -4 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
-                    style={{
-                      color: '#c05a35',
-                      fontSize: '0.82rem',
-                      fontFamily: 'var(--sans)',
-                      lineHeight: 1.5,
-                    }}
+                    style={{ color: '#c05a35', fontSize: '0.82rem', fontFamily: 'var(--sans)', lineHeight: 1.5 }}
                   >
                     {error}
                   </motion.p>
@@ -308,31 +274,20 @@ export default function AuthWall() {
                 whileHover={!loading ? { scale: 1.02, boxShadow: '0 8px 30px var(--accent-glow)' } : {}}
                 whileTap={!loading ? { scale: 0.97 } : {}}
                 style={{
-                  background: 'var(--accent)',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: 50,
-                  padding: '0.9rem',
-                  marginTop: '0.25rem',
-                  fontFamily: 'var(--sans)',
-                  fontSize: '0.9rem',
-                  letterSpacing: '0.07em',
+                  background: 'var(--accent)', color: '#fff',
+                  border: 'none', borderRadius: 50, padding: '0.9rem',
+                  marginTop: '0.25rem', fontFamily: 'var(--sans)',
+                  fontSize: '0.9rem', letterSpacing: '0.07em',
                   cursor: loading ? 'default' : 'pointer',
                   opacity: loading ? 0.7 : 1,
                   boxShadow: '0 4px 20px var(--accent-glow)',
                   transition: 'opacity 0.2s',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '0.5rem',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
                 }}
               >
                 {loading ? (
                   <>
-                    <motion.span
-                      animate={{ rotate: 360 }}
-                      transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
-                    >
+                    <motion.span animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}>
                       🍃
                     </motion.span>
                     <span>{mode === 'signin' ? 'Signing in…' : 'Creating…'}</span>
@@ -344,27 +299,28 @@ export default function AuthWall() {
             </form>
           )}
 
-          {/* Switch mode link */}
+          {/* Switch mode */}
           {!message && (
             <p style={{
-              marginTop: '1.5rem',
-              textAlign: 'center',
-              fontFamily: 'var(--sans)',
-              fontSize: '0.8rem',
-              color: 'var(--text-muted)',
-              letterSpacing: '0.03em',
+              marginTop: '1.5rem', textAlign: 'center',
+              fontFamily: 'var(--sans)', fontSize: '0.8rem',
+              color: 'var(--text-muted)', letterSpacing: '0.03em',
             }}>
               {mode === 'signin' ? (
                 <>No account yet?{' '}
-                  <button onClick={() => { setMode('signup'); setError('') }}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--accent)', fontFamily: 'var(--sans)', fontSize: '0.8rem', textDecoration: 'underline' }}>
+                  <button
+                    onClick={() => { setMode('signup'); setError('') }}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--accent)', fontFamily: 'var(--sans)', fontSize: '0.8rem', textDecoration: 'underline' }}
+                  >
                     Begin here.
                   </button>
                 </>
               ) : (
                 <>Already gathering?{' '}
-                  <button onClick={() => { setMode('signin'); setError('') }}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--accent)', fontFamily: 'var(--sans)', fontSize: '0.8rem', textDecoration: 'underline' }}>
+                  <button
+                    onClick={() => { setMode('signin'); setError('') }}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--accent)', fontFamily: 'var(--sans)', fontSize: '0.8rem', textDecoration: 'underline' }}
+                  >
                     Sign in.
                   </button>
                 </>
@@ -373,21 +329,14 @@ export default function AuthWall() {
           )}
         </motion.div>
 
-        {/* Footer whisper */}
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
           style={{
-            marginTop: '2.5rem',
-            fontFamily: 'var(--serif)',
-            fontStyle: 'italic',
-            fontSize: '0.85rem',
-            color: 'var(--text-muted)',
-            opacity: 0.6,
-            textAlign: 'center',
-            maxWidth: 320,
-            lineHeight: 1.6,
+            marginTop: '2.5rem', fontFamily: 'var(--serif)', fontStyle: 'italic',
+            fontSize: '0.85rem', color: 'var(--text-muted)', opacity: 0.6,
+            textAlign: 'center', maxWidth: 320, lineHeight: 1.6,
           }}
         >
           "Not all those who wander are lost — some are just gathering."

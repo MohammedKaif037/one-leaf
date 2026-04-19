@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 
 export default function GlassJar({ seeds, onClick }) {
   const [open, setOpen] = useState(false)
-  const [hoveredSeed, setHoveredSeed] = useState(null)
 
   const recentSeeds = seeds.slice(0, 8)
   const count = seeds.length
@@ -18,7 +17,7 @@ export default function GlassJar({ seeds, onClick }) {
         style={{
           background: 'none', border: 'none', cursor: 'pointer',
           display: 'flex', flexDirection: 'column', alignItems: 'center',
-          gap: '0.4rem', padding: '0.5rem'
+          gap: '0.4rem', padding: '0.5rem',
         }}
         title="Open your jar"
       >
@@ -46,15 +45,19 @@ export default function GlassJar({ seeds, onClick }) {
               borderRadius: '50%', width: 18, height: 18,
               fontSize: '0.65rem', fontFamily: 'var(--sans)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontWeight: 500
-            }}>{count > 99 ? '99+' : count}</div>
+              fontWeight: 500,
+            }}>
+              {count > 99 ? '99+' : count}
+            </div>
           )}
         </div>
         <span style={{
           fontFamily: 'var(--sans)', fontSize: '0.65rem',
           letterSpacing: '0.08em', color: 'var(--text-muted)',
-          textTransform: 'uppercase'
-        }}>Your jar</span>
+          textTransform: 'uppercase',
+        }}>
+          Your jar
+        </span>
       </motion.button>
 
       {/* Jar modal */}
@@ -69,7 +72,7 @@ export default function GlassJar({ seeds, onClick }) {
               position: 'fixed', inset: 0, zIndex: 200,
               background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              padding: '1.5rem'
+              padding: '1.5rem',
             }}
           >
             <motion.div
@@ -80,16 +83,23 @@ export default function GlassJar({ seeds, onClick }) {
               className="glass"
               style={{
                 width: 'min(480px, 92vw)', maxHeight: '80vh',
-                overflow: 'hidden', display: 'flex', flexDirection: 'column'
+                overflow: 'hidden', display: 'flex', flexDirection: 'column',
               }}
             >
               <div style={{ padding: '1.75rem 1.75rem 1rem' }}>
                 <h2 style={{
                   fontFamily: 'var(--serif)', fontSize: '1.6rem', fontWeight: 300,
-                  color: 'var(--text-primary)', marginBottom: '0.25rem'
-                }}>Your Jar</h2>
-                <p style={{ fontFamily: 'var(--sans)', fontSize: '0.8rem', color: 'var(--text-muted)', letterSpacing: '0.05em' }}>
-                  {count === 0 ? 'Empty for now. Begin gathering.' : `${count} thing${count === 1 ? '' : 's'} gathered`}
+                  color: 'var(--text-primary)', marginBottom: '0.25rem',
+                }}>
+                  Your Jar
+                </h2>
+                <p style={{
+                  fontFamily: 'var(--sans)', fontSize: '0.8rem',
+                  color: 'var(--text-muted)', letterSpacing: '0.05em',
+                }}>
+                  {count === 0
+                    ? 'Empty for now. Begin gathering.'
+                    : `${count} thing${count === 1 ? '' : 's'} gathered`}
                 </p>
               </div>
 
@@ -114,19 +124,21 @@ export default function GlassJar({ seeds, onClick }) {
                           border: '1px solid var(--glass-border)',
                           borderRadius: 12,
                           padding: '0.85rem 1rem',
-                          display: 'flex', alignItems: 'flex-start', gap: '0.75rem'
+                          display: 'flex', alignItems: 'flex-start', gap: '0.75rem',
                         }}
                       >
                         <span style={{ fontSize: '1.4rem', lineHeight: 1 }}>{seed.icon || '🌱'}</span>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <p style={{
                             fontFamily: 'var(--sans)', fontSize: '0.88rem',
-                            color: 'var(--text-primary)', lineHeight: 1.6
-                          }}>{seed.text}</p>
+                            color: 'var(--text-primary)', lineHeight: 1.6,
+                          }}>
+                            {seed.text}
+                          </p>
                           <p style={{
                             fontFamily: 'var(--sans)', fontSize: '0.7rem',
                             color: 'var(--text-muted)', marginTop: '0.25rem',
-                            letterSpacing: '0.04em'
+                            letterSpacing: '0.04em',
                           }}>
                             {new Date(seed.created_at).toLocaleDateString('en', { month: 'long', day: 'numeric' })}
                             {seed.ephemeral && ' · fades in 24h'}

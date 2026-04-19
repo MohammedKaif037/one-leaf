@@ -8,15 +8,39 @@ const MOOD_PROMPTS = {
   'Burnt Orange': 'warm, adventurous, creative, cultural',
   'Twilight Lavender': 'dreamy, ethereal, imaginative, poetic',
   'Rose Blush': 'tender, human, empathetic, relational',
-  'Ink Blue': 'deep, historical, narrative, oceanic'
+  'Ink Blue': 'deep, historical, narrative, oceanic',
 }
 
+// All 9 onboarding categories mapped to context strings
 const CATEGORY_CONTEXTS = {
-  'Gear': 'science, engineering, how things work, mechanisms, mathematics, technology',
-  'Book': 'history, literature, narrative, culture, philosophy, language',
-  'Telescope': 'astronomy, wonder, nature, exploration, cosmos, biology',
-  'Handshake': 'psychology, sociology, human behavior, relationships, society',
-  'Leaf': 'botany, ecology, seasons, slow living, mindfulness, growth'
+  Gear: 'science, engineering, how things work, mechanisms, mathematics, technology',
+  Book: 'history, literature, narrative, culture, philosophy, language',
+  Telescope: 'astronomy, wonder, nature, exploration, cosmos, biology',
+  Handshake: 'psychology, sociology, human behavior, relationships, society',
+  Leaf: 'botany, ecology, seasons, slow living, mindfulness, growth',
+  Brush: 'art, craft, creativity, design, aesthetics, making',
+  Globe: 'other cultures, music, food, traditions, travel, languages',
+  Flask: 'strange biology, chemistry, weird science, peculiar phenomena',
+  Quill: 'philosophy, ethics, meaning, logic, ideas, thought experiments',
+}
+
+async function chatComplete(messages, maxTokens = 400, temperature = 0.9) {
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${API_KEY}`,
+    },
+    body: JSON.stringify({
+      model: 'gpt-3.5-turbo',
+      max_tokens: maxTokens,
+      temperature,
+      messages,
+    }),
+  })
+  if (!res.ok) throw new Error(`API error: ${res.status}`)
+  const data = await res.json()
+  return data.choices?.[0]?.message?.content || ''
 }
 
 export async function generateCuratedContent(mood, categories = ['Telescope']) {
@@ -26,7 +50,7 @@ export async function generateCuratedContent(mood, categories = ['Telescope']) {
     .filter(Boolean)
     .join('; ')
 
-  const systemPrompt = `You are One Leaf, a poetic curator of wonder and small daily discoveries. 
+  const systemPrompt = `You are One Leaf, a poetic curator of wonder and small daily discoveries.
 Your tone is gentle, literary, and slightly mysterious — like a wise friend who notices things others miss.
 You create single, beautiful "gift cards" of knowledge — facts, observations, exercises, or puzzles.
 Each card feels like a serendipitous discovery, not a lecture.
@@ -36,74 +60,46 @@ Always respond in valid JSON only.`
   const userPrompt = `Create ONE perfect "gift card" of discovery for someone feeling ${moodContext}.
 Their interests lean toward: ${categoryContext}.
 
-The card should have:
-- A "fact" or "exercise" or "puzzle" or "observation" (pick the most evocative type)
-- A title (3-6 words, poetic)
-- Body text (2-4 sentences, specific and surprising, never generic)
-- An "icon" emoji that perfectly represents the content
-- A "cta" (call to action) — one gentle invitation to engage (optional link text if relevant)
-- A "type": one of ["fact", "exercise", "puzzle", "observation"]
-
-Respond ONLY in this JSON format, no markdown:
+Respond ONLY in this JSON format, no markdown backticks:
 {
-  "title": "...",
-  "body": "...",
-  "icon": "...",
+  "title": "3-6 poetic words",
+  "body": "2-4 sentences, specific and surprising, never generic",
+  "icon": "single emoji",
   "type": "fact|exercise|puzzle|observation",
-  "cta": "...",
-  "hint": "..." // only if type is puzzle — the answer/hint
+  "cta": "one gentle invitation to engage",
+  "hint": "answer if puzzle, otherwise null"
 }`
 
   try {
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${API_KEY}`
-      },
-      body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
-        max_tokens: 400,
-        temperature: 0.9,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
-        ]
-      })
-    })
-
-    if (!res.ok) throw new Error(`API error: ${res.status}`)
-    const data = await res.json()
-    const text = data.choices?.[0]?.message?.content || ''
+    const text = await chatComplete(
+      [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt },
+      ],
+      400,
+      0.9
+    )
     return JSON.parse(text.replace(/```json|```/g, '').trim())
   } catch (err) {
     console.error('ChatAnywhere error:', err)
-    return getFallbackCard(mood)
+    return getFallbackCard()
   }
 }
 
 export async function generateWordOfSilence() {
   try {
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${API_KEY}`
-      },
-      body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
-        max_tokens: 50,
-        temperature: 1.0,
-        messages: [
-          {
-            role: 'user',
-            content: 'Give me a single evocative word (not a common word) that teaches something about stillness, patience, or presence. Just the word, nothing else.'
-          }
-        ]
-      })
-    })
-    const data = await res.json()
-    return data.choices?.[0]?.message?.content?.trim() || 'Patience'
+    const text = await chatComplete(
+      [
+        {
+          role: 'user',
+          content:
+            'Give me a single evocative word (not a common word) that teaches something about stillness, patience, or presence. Just the word, nothing else.',
+        },
+      ],
+      20,
+      1.0
+    )
+    return text.trim().replace(/[".]/g, '') || 'Patience'
   } catch {
     const words = ['Patience', 'Stillness', 'Breathe', 'Witness', 'Linger', 'Soften', 'Gather']
     return words[Math.floor(Math.random() * words.length)]
@@ -112,55 +108,66 @@ export async function generateWordOfSilence() {
 
 export async function reflectOnGathering(text) {
   try {
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${API_KEY}`
-      },
-      body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
-        max_tokens: 120,
-        temperature: 0.85,
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a gentle, poetic companion. When someone shares something they learned today, respond with a single beautiful sentence — a reflection, a related wonder, or a gentle question. Be specific to what they shared. Never generic. No more than 30 words.'
-          },
-          { role: 'user', content: text }
-        ]
-      })
-    })
-    const data = await res.json()
-    return data.choices?.[0]?.message?.content?.trim() || ''
+    const reflection = await chatComplete(
+      [
+        {
+          role: 'system',
+          content:
+            'You are a gentle, poetic companion. When someone shares something they learned today, respond with a single beautiful sentence — a reflection, a related wonder, or a gentle question. Be specific to what they shared. Never generic. No more than 30 words.',
+        },
+        { role: 'user', content: text },
+      ],
+      120,
+      0.85
+    )
+    return reflection.trim()
   } catch {
     return ''
   }
 }
 
-function getFallbackCard(mood) {
+function getFallbackCard() {
   const fallbacks = [
     {
-      title: "The Weight of Silence",
-      body: "In 1951, John Cage entered an anechoic chamber — the quietest room on Earth — and still heard two sounds: his nervous system and his blood circulating. There is no such thing as silence.",
-      icon: "🎧",
-      type: "fact",
-      cta: "Listen to 4′33″ today"
+      title: 'The Weight of Silence',
+      body: 'In 1951, John Cage entered an anechoic chamber — the quietest room on Earth — and still heard two sounds: his nervous system and his blood circulating. There is no such thing as silence.',
+      icon: '🎧',
+      type: 'fact',
+      cta: 'Listen to 4′33″ today',
+      hint: null,
     },
     {
-      title: "Greek Statues Were Painted",
-      body: "The pristine white marble of ancient Greek sculptures was never meant to be white. They were painted in vivid, startling colors — crimson cloaks, blue eyes, golden hair. The elegant minimalism we admire is just the passage of time.",
-      icon: "🏛️",
-      type: "observation",
-      cta: "Imagine them in color"
+      title: 'Greek Statues Were Painted',
+      body: 'The pristine white marble of ancient Greek sculptures was never meant to be white. They were painted in vivid, startling colors — crimson cloaks, blue eyes, golden hair. The elegant minimalism we admire is just the passage of time.',
+      icon: '🏛️',
+      type: 'observation',
+      cta: 'Imagine them in color',
+      hint: null,
     },
     {
-      title: "A Clock Puzzle",
-      body: "How many times do the hour and minute hands of a clock overlap in a 24-hour period? You might guess 24 — but the answer is more surprising.",
-      icon: "🕐",
-      type: "puzzle",
-      hint: "22 times. Not 24 — because each overlap takes slightly more than an hour."
-    }
+      title: 'A Clock Puzzle',
+      body: 'How many times do the hour and minute hands of a clock overlap in a 24-hour period? You might guess 24 — but the answer is more surprising.',
+      icon: '🕐',
+      type: 'puzzle',
+      cta: 'Think carefully',
+      hint: '22 times. Not 24 — because each overlap takes slightly more than an hour.',
+    },
+    {
+      title: 'Trees Remember Drought',
+      body: 'When a tree survives a drought, it records the stress in its rings — a compressed, denser band of wood that scientists can read centuries later. Every tree is a diary written in wood.',
+      icon: '🌳',
+      type: 'observation',
+      cta: 'Find a tree ring today',
+      hint: null,
+    },
+    {
+      title: 'Count Your Heartbeats',
+      body: 'Sit still for one minute and count your pulse. Most mammals have roughly the same number of heartbeats in a lifetime — about 1.5 billion. Elephants spend each one slowly. Mice spend them in a blur.',
+      icon: '💗',
+      type: 'exercise',
+      cta: 'Try it right now',
+      hint: null,
+    },
   ]
   return fallbacks[Math.floor(Math.random() * fallbacks.length)]
 }

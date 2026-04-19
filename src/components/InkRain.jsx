@@ -17,7 +17,7 @@ function InkDrop({ x, delay, size }) {
         background: 'var(--accent)',
         pointerEvents: 'none',
         zIndex: 50,
-        filter: 'blur(0.5px)'
+        filter: 'blur(0.5px)',
       }}
     />
   )
@@ -34,20 +34,25 @@ export default function InkRain({ onWord }) {
       id: i,
       x: Math.random() * 100,
       delay: Math.random() * 2,
-      size: `${4 + Math.random() * 8}px`
+      size: `${4 + Math.random() * 8}px`,
     }))
     setDrops(newDrops)
 
-    // Show word after 2s
-    const t = setTimeout(() => {
-      onWord?.().then(w => {
-        setWord(w)
-        setWordVisible(true)
-      })
+    // Fetch word after 2s — fixed: properly await the Promise
+    const t = setTimeout(async () => {
+      try {
+        const w = await onWord?.()
+        if (w) {
+          setWord(w)
+          setWordVisible(true)
+        }
+      } catch {
+        // silently fail — the ink rain is decorative
+      }
     }, 2000)
 
     return () => clearTimeout(t)
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 40, pointerEvents: 'none' }}>
@@ -65,7 +70,7 @@ export default function InkRain({ onWord }) {
             style={{
               position: 'fixed', inset: 0,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              pointerEvents: 'none'
+              pointerEvents: 'none',
             }}
           >
             <span style={{
@@ -75,7 +80,7 @@ export default function InkRain({ onWord }) {
               color: 'var(--accent)',
               opacity: 0.7,
               textTransform: 'uppercase',
-              letterSpacing: '0.25em'
+              letterSpacing: '0.25em',
             }}>
               {word}
             </span>
