@@ -70,7 +70,7 @@ export default function HeroCircle({ onGather, onDryDay, gathered }) {
                 display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center',
                 gap: '1rem',
-                animation: 'breathe 5s ease-in-out infinite'
+                animation: 'breathe 5s ease-in-out infinite',
               }}
             >
               <span style={{ fontSize: 'clamp(3rem, 10vw, 4.5rem)', lineHeight: 1 }}>
@@ -80,7 +80,7 @@ export default function HeroCircle({ onGather, onDryDay, gathered }) {
                 fontFamily: 'var(--serif)', fontStyle: 'italic', fontWeight: 300,
                 fontSize: 'clamp(0.95rem, 2.5vw, 1.15rem)',
                 color: 'var(--text-secondary)', letterSpacing: '0.02em',
-                textAlign: 'center', padding: '0 1.5rem', lineHeight: 1.5
+                textAlign: 'center', padding: '0 1.5rem', lineHeight: 1.5,
               }}>
                 What did you gather today?
               </p>
@@ -97,7 +97,7 @@ export default function HeroCircle({ onGather, onDryDay, gathered }) {
                 fontSize: '0.88rem', color: 'var(--text-muted)',
                 letterSpacing: '0.04em', padding: '0.5rem 1rem',
                 borderBottom: '1px solid transparent',
-                transition: 'color 0.2s, border-color 0.2s'
+                transition: 'color 0.2s, border-color 0.2s',
               }}
               onMouseOver={e => {
                 e.target.style.color = 'var(--text-secondary)'
@@ -123,12 +123,12 @@ export default function HeroCircle({ onGather, onDryDay, gathered }) {
             className="glass"
             style={{
               width: 'min(480px, 90vw)', padding: '2rem',
-              display: 'flex', flexDirection: 'column', gap: '1.25rem'
+              display: 'flex', flexDirection: 'column', gap: '1.25rem',
             }}
           >
             <p style={{
               fontFamily: 'var(--serif)', fontSize: '1.2rem', fontWeight: 300,
-              fontStyle: 'italic', color: 'var(--text-secondary)', lineHeight: 1.5
+              fontStyle: 'italic', color: 'var(--text-secondary)', lineHeight: 1.5,
             }}>
               What small thing grew in you today?
             </p>
@@ -146,17 +146,24 @@ export default function HeroCircle({ onGather, onDryDay, gathered }) {
                 fontFamily: 'var(--sans)', fontSize: '0.92rem',
                 color: 'var(--text-primary)', lineHeight: 1.7,
                 resize: 'none', outline: 'none',
-                letterSpacing: '0.02em'
+                letterSpacing: '0.02em',
               }}
             />
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontFamily: 'var(--sans)', fontSize: '0.72rem', color: 'var(--text-muted)', letterSpacing: '0.06em' }}>
+              <span style={{
+                fontFamily: 'var(--sans)', fontSize: '0.72rem',
+                color: 'var(--text-muted)', letterSpacing: '0.06em',
+              }}>
                 ↵ Enter to plant it
               </span>
               <div style={{ display: 'flex', gap: '0.75rem' }}>
-                <button onClick={() => setPhase('idle')}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer',
-                    fontFamily: 'var(--sans)', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+                <button
+                  onClick={() => setPhase('idle')}
+                  style={{
+                    background: 'none', border: 'none', cursor: 'pointer',
+                    fontFamily: 'var(--sans)', fontSize: '0.82rem', color: 'var(--text-muted)',
+                  }}
+                >
                   cancel
                 </button>
                 <motion.button
@@ -171,7 +178,7 @@ export default function HeroCircle({ onGather, onDryDay, gathered }) {
                     padding: '0.55rem 1.25rem', fontFamily: 'var(--sans)',
                     fontSize: '0.82rem', letterSpacing: '0.06em',
                     cursor: text.trim() ? 'pointer' : 'default',
-                    transition: 'all 0.2s'
+                    transition: 'all 0.2s',
                   }}
                 >
                   Plant it 🌱
@@ -181,7 +188,7 @@ export default function HeroCircle({ onGather, onDryDay, gathered }) {
           </motion.div>
         )}
 
-        {/* DONE: Celebration */}
+        {/* DONE: Celebration + reflection */}
         {phase === 'done' && (
           <motion.div
             key="done"
@@ -198,12 +205,15 @@ export default function HeroCircle({ onGather, onDryDay, gathered }) {
             </motion.div>
             <h2 style={{
               fontFamily: 'var(--serif)', fontSize: 'clamp(1.3rem, 3vw, 1.7rem)',
-              fontWeight: 300, color: 'var(--text-primary)', marginBottom: '0.75rem'
+              fontWeight: 300, color: 'var(--text-primary)', marginBottom: '0.75rem',
             }}>
               Into the jar it goes.
             </h2>
             {loadingReflection && (
-              <p style={{ fontFamily: 'var(--sans)', fontSize: '0.82rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>
+              <p style={{
+                fontFamily: 'var(--sans)', fontSize: '0.82rem',
+                color: 'var(--text-muted)', fontStyle: 'italic',
+              }}>
                 reflecting…
               </p>
             )}
@@ -216,7 +226,7 @@ export default function HeroCircle({ onGather, onDryDay, gathered }) {
                   fontFamily: 'var(--serif)', fontStyle: 'italic', fontSize: '1rem',
                   color: 'var(--text-secondary)', lineHeight: 1.7,
                   background: 'var(--glass-bg)', borderRadius: 12,
-                  padding: '1rem 1.25rem', border: '1px solid var(--glass-border)'
+                  padding: '1rem 1.25rem', border: '1px solid var(--glass-border)',
                 }}
               >
                 "{reflection}"
