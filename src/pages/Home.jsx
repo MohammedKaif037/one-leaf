@@ -221,7 +221,7 @@ export default function Home() {
               {theme.label}
             </span>
 
-            {/* Look Back */}
+            /* {/* Look Back */}
             <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
               onClick={() => setView('archive')}
               style={{
@@ -232,7 +232,7 @@ export default function Home() {
                 display: 'flex', alignItems: 'center', gap: '0.3rem',
               }}>
               📖 Look back
-            </motion.button>
+            </motion.button> */
 
             {/* Ephemeral */}
             <button onClick={() => { const n = !ephemeralMode; setEphemeralMode(n); updatePrefs({ ephemeralMode: n }) }}
