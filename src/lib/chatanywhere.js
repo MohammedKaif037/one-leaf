@@ -11,6 +11,15 @@ const MOOD_PROMPTS = {
   'Ink Blue': 'deep, historical, narrative, oceanic',
 }
 
+const STYLE_PROMPTS = {
+  'Poetic': 'lyrical, metaphorical, evocative, uses imagery and rhythm, feels like a gentle meditation, language that lingers',
+  'Practical': 'direct, useful, actionable, clear, focused on real-world application, no fluff, straightforward wisdom',
+  'Whimsical': 'playful, surprising, magical, childlike wonder, unexpected connections, delightfully odd, gently absurd',
+  'Wise': 'profound, timeless, like a quiet elder sharing hard-won insight, minimal but deep, every word carries weight',
+  'Curious': 'questioning, exploratory, invites wonder, ends with more questions than answers, speculative, open-ended',
+  'Grounded': 'earthy, somatic, embodied, connected to physical sensation and presence, rooted in the body and nature',
+}
+
 // All 9 onboarding categories mapped to context strings
 const CATEGORY_CONTEXTS = {
   Gear: 'science, engineering, how things work, mechanisms, mathematics, technology',
@@ -43,15 +52,17 @@ async function chatComplete(messages, maxTokens = 400, temperature = 0.9) {
   return data.choices?.[0]?.message?.content || ''
 }
 
-export async function generateCuratedContent(mood, categories = ['Telescope']) {
+export async function generateCuratedContent(mood, categories = ['Telescope'], style = 'Poetic') {
   const moodContext = MOOD_PROMPTS[mood] || 'curious and open'
+  const styleContext = STYLE_PROMPTS[style] || STYLE_PROMPTS['Poetic']
   const categoryContext = categories
     .map(c => CATEGORY_CONTEXTS[c])
     .filter(Boolean)
     .join('; ')
 
-  const systemPrompt = `You are One Leaf, a poetic curator of wonder and small daily discoveries.
-Your tone is gentle, literary, and slightly mysterious — like a wise friend who notices things others miss.
+  const systemPrompt = `You are One Leaf, a curator of wonder and small daily discoveries.
+Your tone: ${styleContext}
+
 You create single, beautiful "gift cards" of knowledge — facts, observations, exercises, or puzzles.
 Each card feels like a serendipitous discovery, not a lecture.
 Never be preachy or self-helpy. Be curious and specific.
@@ -106,14 +117,24 @@ export async function generateWordOfSilence() {
   }
 }
 
-export async function reflectOnGathering(text) {
+export async function reflectOnGathering(text, style = 'Poetic') {
+  const styleContext = STYLE_PROMPTS[style] || STYLE_PROMPTS['Poetic']
+  
   try {
     const reflection = await chatComplete(
       [
         {
           role: 'system',
-          content:
-            'You are a gentle, poetic companion. When someone shares something they learned today, respond with a single beautiful sentence — a reflection, a related wonder, or a gentle question. Be specific to what they shared. Never generic. No more than 30 words.',
+          content: `You are a gentle companion. Respond to what someone learned today with ONE beautiful sentence.
+          
+Style requirement: ${styleContext}
+
+Rules:
+- Be specific to what they shared (never generic)
+- Max 30 words
+- Match the requested style
+- No quotes, no explanations, just the sentence
+- Feel like a quiet friend reflecting back something true`,
         },
         { role: 'user', content: text },
       ],
@@ -122,7 +143,7 @@ export async function reflectOnGathering(text) {
     )
     return reflection.trim()
   } catch {
-    return ''
+    return getFallbackReflection(style)
   }
 }
 
@@ -170,4 +191,16 @@ function getFallbackCard() {
     },
   ]
   return fallbacks[Math.floor(Math.random() * fallbacks.length)]
+}
+
+function getFallbackReflection(style) {
+  const fallbacks = {
+    'Poetic': 'The smallest lessons often arrive like morning light—soft, then suddenly everywhere.',
+    'Practical': 'That is worth holding onto. You will need it again sooner than you think.',
+    'Whimsical': 'And somewhere, a small bell rang because you learned something new today.',
+    'Wise': 'Knowing is a doorway. Walking through it is the real work.',
+    'Curious': 'What else shifts when you look at it that way?',
+    'Grounded': 'You can feel that settling into your bones now. That is real learning.',
+  }
+  return fallbacks[style] || fallbacks['Poetic']
 }
