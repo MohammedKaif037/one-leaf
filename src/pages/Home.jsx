@@ -6,11 +6,12 @@ import PolaroidCard from '../components/PolaroidCard'
 import GlassJar from '../components/GlassJar'
 import InkRain from '../components/InkRain'
 import Onboarding from '../components/Onboarding'
-import { generateCuratedContent, generateWordOfSilence } from '../lib/chatanywhere'
+import { generateCuratedContent, generateWordOfSilence, reflectOnGathering } from '../lib/chatanywhere'
 import { useJar, usePreferences } from '../hooks/useJar'
 import { useAuth } from '../hooks/useAuth'
 import { signOut } from '../lib/supabase'
 import { getTimeTheme, applyTheme } from '../lib/theme'
+import StylePicker from '../components/StylePicker'
 
 const SILENCE_TIMEOUT = 50000
 
@@ -113,6 +114,7 @@ export default function Home() {
   const [ephemeralMode, setEphemeralMode] = useState(false)
   const [inkRainActive, setInkRainActive] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [responseStyle, setResponseStyle] = useState('Poetic') // MOVED INSIDE COMPONENT
   const silenceRef = useRef(null)
 
   const hour = new Date().getHours()
@@ -162,7 +164,8 @@ export default function Home() {
   async function handleMoodSelect(mood) {
     setView('loading')
     const categories = prefs?.categories?.length ? prefs.categories : ['Telescope']
-    const content = await generateCuratedContent(mood, categories)
+    // Pass the response style to generateCuratedContent
+    const content = await generateCuratedContent(mood, categories, responseStyle)
     setCard(content)
     setView('card')
   }
@@ -172,11 +175,26 @@ export default function Home() {
   }
 
   async function handleGather(entry) {
-    await addSeed({ ...entry, ephemeral: ephemeralMode })
+    // If entry has text, generate a reflection with the selected style
+    if (entry?.text) {
+      const reflection = await reflectOnGathering(entry.text, responseStyle)
+      await addSeed({ 
+        ...entry, 
+        reflection,
+        ephemeral: ephemeralMode 
+      })
+    } else {
+      await addSeed({ ...entry, ephemeral: ephemeralMode })
+    }
     setGathered(true)
   }
 
   function goHome() { setView('home'); setGathered(false); setCard(null) }
+
+  // Handle style change
+  function handleStyleChange(style) {
+    setResponseStyle(style)
+  }
 
   return (
     <div style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden' }}>
@@ -217,22 +235,12 @@ export default function Home() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+            {/* Style Picker - ADDED HERE */}
+            <StylePicker onSelect={handleStyleChange} currentStyle={responseStyle} />
+            
             <span style={{ fontFamily: 'var(--sans)', fontSize: '0.62rem', letterSpacing: '0.12em', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
               {theme.label}
             </span>
-
-            /* {/* Look Back */}
-            <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-              onClick={() => setView('archive')}
-              style={{
-                background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
-                backdropFilter: 'blur(12px)', borderRadius: 50, padding: '0.38rem 0.85rem',
-                cursor: 'pointer', fontFamily: 'var(--sans)', fontSize: '0.7rem',
-                color: 'var(--text-secondary)', letterSpacing: '0.05em',
-                display: 'flex', alignItems: 'center', gap: '0.3rem',
-              }}>
-              📖 Look back
-            </motion.button> */
 
             {/* Ephemeral */}
             <button onClick={() => { const n = !ephemeralMode; setEphemeralMode(n); updatePrefs({ ephemeralMode: n }) }}
@@ -471,6 +479,11 @@ function ArchiveView({ seeds, onClose }) {
                         <p style={{ fontFamily: 'var(--sans)', fontSize: '0.86rem', color: 'var(--text-primary)', lineHeight: 1.65 }}>
                           {seed.text}
                         </p>
+                        {seed.reflection && (
+                          <p style={{ fontFamily: 'var(--serif)', fontSize: '0.75rem', color: 'var(--text-secondary)', fontStyle: 'italic', marginTop: '0.35rem', borderLeft: `2px solid ${c.text}`, paddingLeft: '0.6rem' }}>
+                            {seed.reflection}
+                          </p>
+                        )}
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginTop: '0.28rem', flexWrap: 'wrap' }}>
                           {seed.type && seed.type !== 'gathering' && (
                             <span style={{ fontSize: '0.6rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: c.text, background: c.bg, border: `1px solid ${c.border}`, borderRadius: 50, padding: '0.12rem 0.5rem', fontFamily: 'var(--sans)', fontWeight: 500 }}>
@@ -541,6 +554,11 @@ function WunderkammerDrawer({ seeds }) {
                       <span style={{ fontSize: '1.4rem', lineHeight: 1 }}>{selected.icon || '🌱'}</span>
                       <p style={{ fontFamily: 'var(--serif)', fontStyle: 'italic', fontSize: '0.97rem', color: '#d4b870', lineHeight: 1.7 }}>{selected.text}</p>
                     </div>
+                    {selected.reflection && (
+                      <p style={{ fontFamily: 'var(--serif)', fontSize: '0.78rem', color: 'rgba(180,140,80,0.55)', marginTop: '0.65rem', fontStyle: 'italic', borderLeft: '1px solid rgba(180,140,80,0.25)', paddingLeft: '0.75rem' }}>
+                        {selected.reflection}
+                      </p>
+                    )}
                     <p style={{ fontFamily: 'var(--sans)', fontSize: '0.63rem', color: 'rgba(180,140,80,0.38)', marginTop: '0.5rem', letterSpacing: '0.04em' }}>
                       {new Date(selected.created_at).toLocaleDateString('en', { month: 'long', day: 'numeric', year: 'numeric' })}
                     </p>
