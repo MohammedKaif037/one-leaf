@@ -164,3 +164,42 @@ textarea.leaf-input { resize: none; line-height: 1.75; }
   transition: all 0.2s;
 }
 .btn-ghost:hover { border-color: var(--text-muted); color: var(--text-secondary); background: rgba(255,255,255,0.3); }
+
+/* ── Style Picker Styles ── */
+.style-picker {
+  background: rgba(0,0,0,0.04);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-border);
+  border-radius: 60px;
+  padding: 0.35rem;
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.style-btn {
+  background: transparent;
+  border: none;
+  border-radius: 50px;
+  padding: 0.5rem 1.2rem;
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  color: var(--text-muted);
+}
+
+.style-btn.active {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 2px 12px var(--accent-glow);
+}
+
+.style-btn:hover:not(.active) {
+  background: rgba(255,255,255,0.3);
+  color: var(--text-secondary);
+}
